@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Match Details - Study Buddy Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a class="brand" href="/"><span>📚</span> Study Buddy Matcher</a>
+    <div class="nav-links">
+        <a href="/">Home</a><a href="/students">Students</a>
+        <a href="/matches/search">Find Partners</a><a href="/requests/select">Requests</a>
+    </div>
+</nav>
+<div class="container">
+    <div class="page-header">
+        <h1>Match Details</h1>
+        <a th:href="@{/matches/search}" class="btn btn-outline btn-sm">← Back to Search</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" data-auto-dismiss th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}"   class="alert alert-danger"  data-auto-dismiss th:text="${errorMessage}"></div>
+
+    <!-- Score summary -->
+    <div class="card" style="text-align:center;">
+        <div class="score-circle"
+             th:style="'background:' + (${result.totalScore >= 70} ? '#16a34a' : (${result.totalScore >= 40} ? '#2563eb' : '#d97706'))">
+            <span th:text="${result.totalScore}">0</span>
+            <small>/ 100</small>
+        </div>
+        <div style="font-size:1.1rem; font-weight:600;" th:text="${searcher.studentName} + ' ↔ ' + ${candidate.studentName}"></div>
+        <div style="color:#64748b; font-size:.9rem;" th:text="'Subject: ' + ${subject}"></div>
+    </div>
+
+    <!-- Score breakdown -->
+    <div class="card">
+        <div class="section-title">Compatibility Breakdown</div>
+        <table class="breakdown-table" style="width:100%;">
+            <tr>
+                <td>📖 Common Subject</td>
+                <td>
+                    <div class="score-bar-bg"><div class="score-bar-fill" th:style="'width:' + ${result.subjectScore * 100 / 40} + '%'"></div></div>
+                </td>
+                <td th:text="${result.subjectScore} + ' / 40'"></td>
+            </tr>
+            <tr>
+                <td>🎯 Learning Goal</td>
+                <td>
+                    <div class="score-bar-bg"><div class="score-bar-fill" th:style="'width:' + ${result.goalScore * 100 / 20} + '%'"></div></div>
+                </td>
+                <td th:text="${result.goalScore} + ' / 20'"></td>
+            </tr>
+            <tr>
+                <td>⏰ Study Time</td>
+                <td>
+                    <div class="score-bar-bg"><div class="score-bar-fill" th:style="'width:' + ${result.timeScore * 100 / 15} + '%'"></div></div>
+                </td>
+                <td th:text="${result.timeScore} + ' / 15'"></td>
+            </tr>
+            <tr>
+                <td>📍 Location</td>
+                <td>
+                    <div class="score-bar-bg"><div class="score-bar-fill" th:style="'width:' + ${result.locationScore * 100 / 15} + '%'"></div></div>
+                </td>
+                <td th:text="${result.locationScore} + ' / 15'"></td>
+            </tr>
+            <tr>
+                <td>📊 Skill Level</td>
+                <td>
+                    <div class="score-bar-bg"><div class="score-bar-fill" th:style="'width:' + ${result.skillScore * 100 / 10} + '%'"></div></div>
+                </td>
+                <td th:text="${result.skillScore} + ' / 10'"></td>
+            </tr>
+            <tr style="font-weight:700; border-top:2px solid #e2e8f0;">
+                <td>Total Compatibility</td>
+                <td>
+                    <div class="score-bar-bg"><div class="score-bar-fill" th:style="'width:' + ${result.totalScore} + '%'"></div></div>
+                </td>
+                <td th:text="${result.totalScore} + ' / 100'"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Side-by-side comparison -->
+    <div class="form-row">
+        <div class="card">
+            <div class="section-title" th:text="${searcher.studentName} + ' (You)'"></div>
+            <table style="font-size:.9rem; width:100%;">
+                <tr><td style="color:#64748b;">Department</td><td th:text="${searcher.department}"></td></tr>
+                <tr><td style="color:#64748b;">Year</td><td th:text="${searcher.yearOfStudy}"></td></tr>
+                <tr th:if="${myPref != null}">
+                    <td style="color:#64748b;">Goal</td><td th:text="${myPref.learningGoal}"></td>
+                </tr>
+                <tr th:if="${myPref != null}">
+                    <td style="color:#64748b;">Skill</td><td th:text="${myPref.skillLevel}"></td>
+                </tr>
+                <tr th:if="${myPref != null}">
+                    <td style="color:#64748b;">Time</td><td th:text="${myPref.preferredTime}"></td>
+                </tr>
+                <tr th:if="${myPref != null}">
+                    <td style="color:#64748b;">Location</td><td th:text="${myPref.preferredLocation}"></td>
+                </tr>
+                <tr th:unless="${myPref != null}">
+                    <td colspan="2" style="color:#d97706;">You have no preference for this subject.</td>
+                </tr>
+            </table>
+        </div>
+        <div class="card">
+            <div class="section-title" th:text="${candidate.studentName}"></div>
+            <table style="font-size:.9rem; width:100%;">
+                <tr><td style="color:#64748b;">Department</td><td th:text="${candidate.department}"></td></tr>
+                <tr><td style="color:#64748b;">Year</td><td th:text="${candidate.yearOfStudy}"></td></tr>
+                <tr><td style="color:#64748b;">Goal</td><td th:text="${theirPref.learningGoal}"></td></tr>
+                <tr><td style="color:#64748b;">Skill</td><td th:text="${theirPref.skillLevel}"></td></tr>
+                <tr><td style="color:#64748b;">Time</td><td th:text="${theirPref.preferredTime}"></td></tr>
+                <tr><td style="color:#64748b;">Location</td><td th:text="${theirPref.preferredLocation}"></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Send request -->
+    <div class="card">
+        <div class="section-title">Send Study Request</div>
+        <form action="/requests/send" method="post">
+            <input type="hidden" name="requesterId" th:value="${searcher.studentId}"/>
+            <input type="hidden" name="receiverId"  th:value="${candidate.studentId}"/>
+            <input type="hidden" name="subject"     th:value="${subject}"/>
+            <p style="color:#475569; margin-bottom:1rem;">
+                Send a study partnership request to <strong th:text="${candidate.studentName}"></strong>
+                for <strong th:text="${subject}"></strong>.
+            </p>
+            <button type="submit" class="btn btn-success">📨 Send Study Request</button>
+        </form>
+    </div>
+
+</div>
+<footer>Study Buddy Matcher &mdash; DBMS Final Project</footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

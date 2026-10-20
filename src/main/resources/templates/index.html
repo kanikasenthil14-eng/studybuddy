@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Study Buddy Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/"><span>📚</span> Study Buddy Matcher</a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/students">Students</a>
+        <a href="/matches/search">Find Partners</a>
+        <a href="/requests/select">Requests</a>
+        <a href="/requests/partnerships?studentId=0">Partnerships</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Flash messages -->
+    <div th:if="${successMessage}" class="alert alert-success" data-auto-dismiss th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}"   class="alert alert-danger"  data-auto-dismiss th:text="${errorMessage}"></div>
+
+    <!-- Hero -->
+    <div class="card" style="text-align:center; padding: 2.5rem 1.5rem;">
+        <div style="font-size:3rem; margin-bottom:.5rem;">📚</div>
+        <h1 style="font-size:2rem; font-weight:700; margin-bottom:.5rem;">Study Buddy Matcher</h1>
+        <p style="color:#64748b; max-width:520px; margin:0 auto 1.5rem;">
+            Find compatible study partners based on shared subjects, learning goals,
+            skill levels, preferred times, and locations.
+        </p>
+        <div style="display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap;">
+            <a href="/students/register" class="btn btn-primary">Register Student</a>
+            <a href="/matches/search"    class="btn btn-outline">Find Study Partners</a>
+        </div>
+    </div>
+
+    <!-- Dashboard stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" th:text="${totalStudents}">0</div>
+            <div class="stat-label">Registered Students</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-number" th:text="${totalPreferences}">0</div>
+            <div class="stat-label">Study Preferences</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-number" th:text="${pendingRequests}">0</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-number" th:text="${acceptedPartnerships}">0</div>
+            <div class="stat-label">Active Partnerships</div>
+        </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="quick-links">
+        <a href="/students/register" class="quick-link"><span class="icon">➕</span>Register Student</a>
+        <a href="/students"          class="quick-link"><span class="icon">👥</span>View Students</a>
+        <a href="/matches/search"    class="quick-link"><span class="icon">🔍</span>Find Partners</a>
+        <a href="/requests/select"   class="quick-link"><span class="icon">📨</span>Manage Requests</a>
+        <a href="/requests/partnerships?studentId=0" class="quick-link"><span class="icon">🤝</span>Partnerships</a>
+    </div>
+
+    <!-- How it works -->
+    <div class="card">
+        <div class="card-title">How Study Matching Works</div>
+        <p style="color:#475569; margin-bottom:1rem;">
+            The compatibility score is calculated using five criteria (maximum 100 points):
+        </p>
+        <table class="breakdown-table">
+            <tr><td>📖 Common Subject</td><td>40 pts</td></tr>
+            <tr><td>🎯 Similar Learning Goal</td><td>20 pts</td></tr>
+            <tr><td>⏰ Compatible Study Time</td><td>15 pts</td></tr>
+            <tr><td>📍 Same Preferred Location</td><td>15 pts</td></tr>
+            <tr><td>📊 Compatible Skill Level</td><td>10 pts</td></tr>
+        </table>
+        <p style="color:#64748b; font-size:.85rem; margin-top:1rem;">
+            This is a rule-based compatibility estimate, not a scientifically validated prediction or machine-learning model.
+        </p>
+    </div>
+
+</div>
+
+<footer>Study Buddy Matcher &mdash; DBMS Final Project &copy; 2024</footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

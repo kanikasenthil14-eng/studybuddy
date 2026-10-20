@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Edit Student - Study Buddy Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a class="brand" href="/"><span>📚</span> Study Buddy Matcher</a>
+    <div class="nav-links">
+        <a href="/">Home</a><a href="/students">Students</a>
+        <a href="/matches/search">Find Partners</a><a href="/requests/select">Requests</a>
+    </div>
+</nav>
+<div class="container">
+    <div class="page-header">
+        <h1>Edit Student Profile</h1>
+        <a th:href="@{/students/{id}(id=${student.studentId})}" class="btn btn-outline btn-sm">← Back</a>
+    </div>
+    <div class="card">
+        <form th:action="@{/students/{id}/update(id=${student.studentId})}" th:object="${student}" method="post" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="studentName">Full Name *</label>
+                    <input type="text" id="studentName" th:field="*{studentName}"
+                           th:classappend="${#fields.hasErrors('studentName')} ? 'is-invalid'"
+                           class="form-control"/>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                           class="form-control"/>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="department">Department *</label>
+                    <input type="text" id="department" th:field="*{department}"
+                           th:classappend="${#fields.hasErrors('department')} ? 'is-invalid'"
+                           class="form-control"/>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+                </div>
+                <div class="form-group">
+                    <label for="yearOfStudy">Year of Study * (1–6)</label>
+                    <input type="number" id="yearOfStudy" th:field="*{yearOfStudy}"
+                           th:classappend="${#fields.hasErrors('yearOfStudy')} ? 'is-invalid'"
+                           class="form-control" min="1" max="6"/>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('yearOfStudy')}" th:errors="*{yearOfStudy}"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="contactInfo">Contact Info (optional)</label>
+                <input type="text" id="contactInfo" th:field="*{contactInfo}" class="form-control"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+</div>
+<footer>Study Buddy Matcher &mdash; DBMS Final Project</footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

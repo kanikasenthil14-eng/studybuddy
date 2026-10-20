@@ -1,0 +1,12 @@
+target/
+*.class
+*.jar
+*.war
+.env
+db.properties
+*.properties.local
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/settings.json

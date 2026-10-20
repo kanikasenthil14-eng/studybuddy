@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Incoming Requests - Study Buddy Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a class="brand" href="/"><span>📚</span> Study Buddy Matcher</a>
+    <div class="nav-links">
+        <a href="/">Home</a><a href="/students">Students</a>
+        <a href="/matches/search">Find Partners</a><a href="/requests/select">Requests</a>
+    </div>
+</nav>
+<div class="container">
+    <div class="page-header">
+        <h1>📨 Incoming Requests — <span th:text="${student.studentName}"></span></h1>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+            <a th:href="@{/requests/sent(studentId=${student.studentId})}"         class="btn btn-outline btn-sm">Sent</a>
+            <a th:href="@{/requests/partnerships(studentId=${student.studentId})}" class="btn btn-outline btn-sm">Partnerships</a>
+            <a href="/requests/select" class="btn btn-outline btn-sm">← Change Student</a>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" data-auto-dismiss th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}"   class="alert alert-danger"  data-auto-dismiss th:text="${errorMessage}"></div>
+
+    <div class="card" th:if="${requests.isEmpty()}">
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>No incoming requests.</p>
+        </div>
+    </div>
+
+    <div class="card" th:unless="${requests.isEmpty()}">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${requests}">
+                        <td th:text="${r.requesterName}"></td>
+                        <td th:text="${r.subjectName}"></td>
+                        <td th:text="${#temporals.format(r.requestTime, 'dd MMM yyyy HH:mm')}"></td>
+                        <td>
+                            <span th:class="'badge badge-' + ${r.status.toLowerCase()}" th:text="${r.status}"></span>
+                        </td>
+                        <td>
+                            <form th:if="${r.status == 'PENDING'}"
+                                  th:action="@{/requests/{id}/accept(id=${r.requestId})}" method="post" style="display:inline;">
+                                <input type="hidden" name="studentId" th:value="${student.studentId}"/>
+                                <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                            </form>
+                            <form th:if="${r.status == 'PENDING'}"
+                                  th:action="@{/requests/{id}/reject(id=${r.requestId})}" method="post"
+                                  style="display:inline;" data-confirm="Reject this request?">
+                                <input type="hidden" name="studentId" th:value="${student.studentId}"/>
+                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                            <span th:unless="${r.status == 'PENDING'}" style="color:#94a3b8; font-size:.85rem;">No actions</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<footer>Study Buddy Matcher &mdash; DBMS Final Project</footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

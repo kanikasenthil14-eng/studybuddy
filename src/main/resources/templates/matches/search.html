@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Find Study Partners - Study Buddy Matcher</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav class="navbar">
+    <a class="brand" href="/"><span>📚</span> Study Buddy Matcher</a>
+    <div class="nav-links">
+        <a href="/">Home</a><a href="/students">Students</a>
+        <a href="/matches/search">Find Partners</a><a href="/requests/select">Requests</a>
+    </div>
+</nav>
+<div class="container">
+    <div class="page-header"><h1>🔍 Find Study Partners</h1></div>
+
+    <div th:if="${errorMessage}"   class="alert alert-danger"  th:text="${errorMessage}"></div>
+    <div th:if="${warningMessage}" class="alert alert-warning" th:text="${warningMessage}"></div>
+
+    <!-- Search form -->
+    <div class="card">
+        <div class="card-title">Search Criteria</div>
+        <form action="/matches/results" method="get">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="studentId">Your Profile *</label>
+                    <select id="studentId" name="studentId" class="form-control" required>
+                        <option value="">-- Select your profile --</option>
+                        <option th:each="s : ${students}"
+                                th:value="${s.studentId}"
+                                th:text="${s.studentName} + ' (' + ${s.department} + ')'"
+                                th:selected="${s.studentId == searcher?.studentId}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject *</label>
+                    <select id="subject" name="subject" class="form-control" required>
+                        <option value="">-- Select subject --</option>
+                        <option th:each="sub : ${subjects}"
+                                th:value="${sub}"
+                                th:text="${sub}"
+                                th:selected="${sub == subject}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="filterSkill">Filter by Skill Level</label>
+                    <select id="filterSkill" name="filterSkill" class="form-control">
+                        <option value="">Any</option>
+                        <option th:each="sl : ${skillLevels}" th:value="${sl}" th:text="${sl}"
+                                th:selected="${sl == filterSkill}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterTime">Filter by Study Time</label>
+                    <select id="filterTime" name="filterTime" class="form-control">
+                        <option value="">Any</option>
+                        <option th:each="t : ${timeOptions}" th:value="${t}" th:text="${t}"
+                                th:selected="${t == filterTime}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterLocation">Filter by Location</label>
+                    <select id="filterLocation" name="filterLocation" class="form-control">
+                        <option value="">Any</option>
+                        <option th:each="loc : ${locations}" th:value="${loc}" th:text="${loc}"
+                                th:selected="${loc == filterLocation}"></option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div th:if="${matches != null}">
+        <div th:if="${matches.isEmpty()}" class="card">
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <p>No study partners found for the selected criteria.</p>
+                <p style="font-size:.85rem;">Try removing filters or choosing a different subject.</p>
+            </div>
+        </div>
+
+        <div th:unless="${matches.isEmpty()}">
+            <p style="color:#64748b; margin-bottom:1rem;"
+               th:text="'Found ' + ${matches.size()} + ' potential study partner(s) for ' + ${subject}"></p>
+
+            <div th:each="m : ${matches}" class="card" style="margin-bottom:1rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <div style="font-size:1.05rem; font-weight:600;" th:text="${m.candidate?.studentName}">Name</div>
+                        <div style="color:#64748b; font-size:.88rem;"
+                             th:text="${m.candidate?.department} + ' · Year ' + ${m.candidate?.yearOfStudy}"></div>
+                        <div style="margin-top:.5rem;">
+                            <span class="badge badge-accepted" th:text="${m.result.candidatePref.skillLevel}"></span>
+                            <span style="margin-left:.5rem; color:#64748b; font-size:.85rem;"
+                                  th:text="${m.result.candidatePref.preferredTime} + ' · ' + ${m.result.candidatePref.preferredLocation}"></span>
+                        </div>
+                        <div style="color:#475569; font-size:.88rem; margin-top:.35rem;"
+                             th:text="'Goal: ' + ${m.result.candidatePref.learningGoal}"></div>
+                    </div>
+                    <div style="text-align:center; min-width:90px;">
+                        <div class="score-circle" th:style="'background:' + (${m.result.totalScore >= 70} ? '#16a34a' : (${m.result.totalScore >= 40} ? '#2563eb' : '#d97706'))">
+                            <span th:text="${m.result.totalScore}">0</span>
+                            <small>/ 100</small>
+                        </div>
+                        <div style="display:flex; gap:.4rem; justify-content:center; flex-wrap:wrap;">
+                            <a th:href="@{/matches/details(studentId=${searcher.studentId}, candidateId=${m.result.candidatePref.studentId}, subject=${subject})}"
+                               class="btn btn-info btn-sm">Details</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Mini score bar -->
+                <div style="margin-top:.75rem;">
+                    <div class="score-label">
+                        <span>Compatibility</span>
+                        <span th:text="${m.result.totalScore} + '%'"></span>
+                    </div>
+                    <div class="score-bar-bg">
+                        <div class="score-bar-fill" th:style="'width:' + ${m.result.totalScore} + '%'"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<footer>Study Buddy Matcher &mdash; DBMS Final Project</footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
